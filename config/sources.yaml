@@ -1,0 +1,27 @@
+sources:
+  - slug: nsidc
+    provider: NOAA/NSIDC
+    product: Sea Ice Index G02135
+    version: "4"
+    catalog_url: https://nsidc.org/data/g02135/versions/4
+    citation_url: https://doi.org/10.7265/a98x-0f50
+    resource_url: https://noaadata.apps.nsidc.org/NOAA/G02135/south/daily/data/S_seaice_extent_daily_v4.0.csv
+    expected_poll_interval: P1D
+    revalidate_recent_days: 14
+    redistribution_status: pending_review
+    enabled: false
+  - slug: amrdc
+    provider: AMRDC
+    product: Automatic Weather Station quality-controlled observations
+    catalog_url: https://amrdcdata.ssec.wisc.edu/group/about/automatic-weather-station-project
+    expected_poll_interval: P7D
+    redistribution_status: pending_review
+    enabled: false
+  - slug: oisst
+    provider: NOAA NCEI
+    product: Optimum Interpolation Sea Surface Temperature
+    version: "2.1"
+    catalog_url: https://www.ncei.noaa.gov/products/optimum-interpolation-sst
+    expected_poll_interval: P1D
+    redistribution_status: pending_review
+    enabled: false
