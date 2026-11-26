@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/tsc221645/polar_observatory/services/api/internal/store"
 	"github.com/tsc221645/polar_observatory/services/api/internal/transport"
 )
 
@@ -32,6 +33,7 @@ func main() {
 
 func run(ctx context.Context, addr, databaseURL string, logger *slog.Logger) error {
 	var checkReady func(context.Context) bool
+	var observationStore transport.ObservationStore
 	if databaseURL != "" {
 		config, err := pgxpool.ParseConfig(databaseURL)
 		if err != nil {
@@ -45,13 +47,14 @@ func run(ctx context.Context, addr, databaseURL string, logger *slog.Logger) err
 			return errors.New("could not initialize PostgreSQL pool")
 		}
 		defer pool.Close()
+		observationStore = store.NewPostgres(pool)
 		checkReady = func(ctx context.Context) bool {
 			// Query the migrated schema through the same role used for API reads.
 			_, err := pool.Exec(ctx, "SELECT slug FROM polar.sources LIMIT 0")
 			return err == nil
 		}
 	}
-	return serve(ctx, addr, logger, transport.NewHandler(checkReady))
+	return serve(ctx, addr, logger, transport.NewHandler(checkReady, observationStore))
 }
 
 func serve(ctx context.Context, addr string, logger *slog.Logger, handler http.Handler) error {

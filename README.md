@@ -32,6 +32,16 @@ curl http://127.0.0.1:8000/api/v1/health/live
 
 The response is `{"status":"ok"}`. Use `POLAR_API_ADDR` to override the default bind address. Run `go test ./...` and `go vet ./...` from `services/api`.
 
+Once PostgreSQL is migrated and contains accepted observations, query the first
+versioned data contract with an inclusive start and exclusive end date:
+
+```sh
+curl 'http://127.0.0.1:8000/api/v1/observations?metric=sea_ice_extent&entity=hemisphere%3Asouth&from=2024-01-01&to=2025-01-01&limit=100'
+```
+
+The response preserves the normalized value, quality flag, source and artifact
+identifiers, and returns an opaque `next_cursor` when more rows are available.
+
 ## PostgreSQL readiness
 
 `GET /api/v1/health/ready` returns HTTP 200 when the API can query the migrated source catalog. It returns HTTP 503 when PostgreSQL is unconfigured, unavailable, or the catalog is inaccessible. Liveness remains available during a database outage.

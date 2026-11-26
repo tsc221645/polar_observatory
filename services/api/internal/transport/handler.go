@@ -6,8 +6,12 @@ import (
 	"time"
 )
 
-func NewHandler(checkReady func(context.Context) bool) http.Handler {
+func NewHandler(checkReady func(context.Context) bool, stores ...ObservationStore) http.Handler {
 	mux := http.NewServeMux()
+	var observations ObservationStore
+	if len(stores) > 0 {
+		observations = stores[0]
+	}
 	mux.HandleFunc("GET /api/v1/health/live", func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = w.Write([]byte("{\"status\":\"ok\"}\n"))
@@ -25,5 +29,6 @@ func NewHandler(checkReady func(context.Context) bool) http.Handler {
 		}
 		_, _ = w.Write([]byte("{\"status\":\"ok\"}\n"))
 	})
+	mux.HandleFunc("GET /api/v1/observations", observationHandler(observations))
 	return mux
 }
